@@ -1,0 +1,126 @@
+/* ---------- RESET ---------- */
+/* Removes default margins and paddings of browsers. */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ---------- CSS VARIABLES ---------- */
+/* Defines the palette and settings. Use them with var(--variable-name). */
+:root {
+    --bg: #0a0d14;
+    --surface: #101624;
+    --border: #111828;
+    --accent: #6a9fd8;
+    --highlight: #90c4f8;
+    --text: #e8edf5;
+    --muted: #4a5568;
+
+    --font: 'Inter', system-ui, sans-serif;
+    --max-width: 900px;
+    --section-gap: 7rem;
+    --radius: 10px;
+}
+
+
+/* ---------- BODY ---------- */
+/* Base style for all the elements in the body. */
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    padding-top: 4.5rem;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+/* ---------- LINKS ---------- */
+/* Base style for all the links. */
+a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--highlight);
+}
+
+
+/* ---------- NAVIGATION ---------- */
+/* Basic styling – fixed to the top of the screen with the logo on the left and links on the right. */
+nav {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--bg);
+    border-bottom: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 3rem;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Scrolled state – added by JS when page scrolls down. */
+nav.scrolled {
+    border-bottom-color: var(--border);
+    background-color: #0a0d14eb;
+    backdrop-filter: blur(10px);
+}
+
+/* Logo – basic styling. */
+.nav-logo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--highlight);
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nav-logo:hover {
+    color: var(--text);
+}
+
+/* Navigation links – removes bullet points and displays the links in a row. */
+.nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+}
+
+/* Individual navigation links – muted by default and animated underline that grows on hover. */
+.nav-links a {
+    font-size:  0.95rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease;
+    position: relative;
+    padding-bottom: 3px;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--accent);
+    transition: width 0.25s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--text);
+}
+
+.nav-links a.active::after, .nav-links a:hover::after {
+    width: 100%;
+}
