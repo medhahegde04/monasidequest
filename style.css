@@ -7,6 +7,7 @@
 }
 
 
+
 /* ---------- CSS VARIABLES ---------- */
 /* Defines the palette and settings. Use them with var(--variable-name). */
 :root {
@@ -25,6 +26,7 @@
 }
 
 
+
 /* ---------- BODY ---------- */
 /* Base style for all the elements in the body. */
 body {
@@ -38,6 +40,7 @@ body {
 }
 
 
+
 /* ---------- LINKS ---------- */
 /* Base style for all the links. */
 a {
@@ -49,6 +52,7 @@ a {
 a:hover {
     color: var(--highlight);
 }
+
 
 
 /* ---------- NAVIGATION ---------- */
@@ -123,4 +127,64 @@ nav.scrolled {
 
 .nav-links a.active::after, .nav-links a:hover::after {
     width: 100%;
+}
+
+
+
+/* ---------- HERO ---------- */
+/* Fills content to the screen. */
+#hero {
+    padding-top: calc(var(--section-gap) + 3rem);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1 {
+    font-size: clamp(2.6rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 1rem;
+    min-height: 1.2em;
+}
+
+/* Blinking cursor animation on title. */
+#hero-title::after {
+    content: '|';
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+}
+
+@keyframes blink {
+    0%, 100% {opacity: 1;}
+    50% {opacity: 0;}
+}
+
+/* Tagline styling. */
+.hero-tagline {
+    font-size: 1rem;
+    color: var(--accent);
+    margin-bottom: 1.75rem;
+    font-style: italic;
+}
+
+/* Styling intro paragraph. */
+.hero-intro {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 580px;
+    line-height: 1.85;
+}
+
+/* Elements are visible only after JS finishes typing the tile.  */
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.9s ease;
+}
+
+.fade-in {
+    opacity: 1;
 }

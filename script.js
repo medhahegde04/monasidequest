@@ -25,3 +25,26 @@ window.addEventListener('scroll', () => {
         }
     });
 });
+
+
+/* ---------- HERO TITLE TYPING ANIMATION ---------- */
+const heroTitle = document.getElementById('hero-title');
+
+if (heroTitle) {
+    const text = "Hi, I'm Medha."
+    let index = 0;
+
+    function type() {
+        if (index < text.length) {
+            heroTitle.textContent += text[index];
+            index++;
+            setTimeout(type, 85);
+        }
+        else {
+            heroTitle.classList.add('done');
+            document.querySelectorAll('.hero-tagline, .hero-intro').forEach(el => el.classList.add('visible'));
+        }
+    }
+
+    setTimeout(type, 1000);
+}
