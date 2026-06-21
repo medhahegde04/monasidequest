@@ -204,7 +204,7 @@ section:last-of-type {
     border-bottom: none;
 }
 
-/* Basic styling for section titles. */
+/* Basic styling for section titles and subheadings. */
 h2 {
     font-size: 1rem;
     font-weight: 500;
@@ -212,6 +212,13 @@ h2 {
     text-transform: uppercase;
     letter-spacing: 0.14em;
     margin-bottom: 2.25rem;
+}
+
+h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
 }
 
 
@@ -260,4 +267,49 @@ h2 {
 .reveal.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+
+
+/* ---------- CURRENTLY LEARNING SECTION ---------- */
+/* Styling for cards grid. */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+/* Styling for each learning card. */
+.learning-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.8rem;
+    transition: border-left-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.learning-card:hover {
+    border-left-color: var(--highlight);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px #6a9fd866;
+}
+
+/* Styling for card status. */
+.card-status {
+    font-size: 0.72rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+}
+
+/* Styling for card description. */
+.learning-card p:last-child {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    line-height: 1.65;
+    text-align: justify;
 }
