@@ -17,7 +17,7 @@
     --accent: #6a9fd8;
     --highlight: #90c4f8;
     --text: #e8edf5;
-    --muted: #4a5568;
+    --muted: #7b8ba7;
 
     --font: 'Inter', system-ui, sans-serif;
     --max-width: 900px;
@@ -185,6 +185,6 @@ h1 {
     transition: opacity 0.9s ease;
 }
 
-.fade-in {
+.fade-in.visible {
     opacity: 1;
 }
