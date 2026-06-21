@@ -188,3 +188,76 @@ h1 {
 .fade-in.visible {
     opacity: 1;
 }
+
+
+
+/* ---------- SECTION ---------- */
+/* Basic styling for all sections. */
+section {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--section-gap) 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+section:last-of-type {
+    border-bottom: none;
+}
+
+/* Basic styling for section titles. */
+h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 2.25rem;
+}
+
+
+
+/* ---------- ABOUT ME SECTION ---------- */
+/* Styling for the paragraphs under the "about me" section. */
+#about p {
+    font-size: 1.05rem;
+    color: var(--muted);
+    margin-bottom: 1.4rem;
+    max-width: 680px;
+    text-align: justify;
+}
+
+#about ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 1.4rem;
+    max-width: 680px;
+}
+
+#about ul li {
+    font-size: 1.05rem;
+    color: var(--muted);
+    padding-left: 1.5rem;
+    position: relative;
+    text-align: justify;
+}
+
+#about ul li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+}
+
+/* Reveals elements as page scrolls down. */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}

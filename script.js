@@ -27,6 +27,7 @@ window.addEventListener('scroll', () => {
 });
 
 
+
 /* ---------- HERO TITLE TYPING ANIMATION ---------- */
 const heroTitle = document.getElementById('hero-title');
 
@@ -74,3 +75,24 @@ if (heroTitle) {
 
     setTimeout(type, 600);
 }
+
+
+
+/* ---------- SCROLL REVEAL EFFECTS ---------- */
+const revealEls = document.querySelectorAll('.reveal');
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+        else {
+            entry.target.classList.remove('visible');
+        }
+    });
+}, {
+    threshold: 0.35,
+    rootMargin: '0px 0px -40px 0px'
+});
+
+revealEls.forEach(el => observer.observe(el));
