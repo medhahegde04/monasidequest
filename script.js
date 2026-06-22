@@ -76,6 +76,10 @@ if (heroTitle) {
     setTimeout(type, 600);
 }
 
+if (!heroTitle) {
+    document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+}
+
 
 
 /* ---------- SCROLL REVEAL EFFECTS ---------- */
@@ -96,3 +100,61 @@ const observer = new IntersectionObserver((entries) => {
 });
 
 revealEls.forEach(el => observer.observe(el));
+
+
+
+/* ---------- DYNAMIC PROJECT DISPLAY ---------- */
+function buildCard(project) {
+    const githubLink = project.github ? `<a href="${project.github}" target="_blank" class="project-link">Github →</a>` : '';
+    const liveLink = project.live ? `<a href="${project.live}" target="_blank" class="project-link">Live →</a>` : '';
+    const linksRow = (project.github || github.live) ? `<div class="project-links">${githubLink}${liveLink}</div>` : '';
+
+    return `
+         <div class="project-card reveal" data-domain="${project.domain}">
+            <div class="project-card-header">
+                <span class="project-tag ${project.tagClass}">${project.tag}</span>
+                <span class="project-status">${project.status}</span>
+            </div>
+            <h3>${project.title}</h3>
+            <p>${project.description}</p>
+            ${linksRow}
+        </div>
+    `;
+}
+
+function observeNewCards(container) {
+    container.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+const featuredContainer = document.getElementById('featured-projects');
+if (featuredContainer) {
+    const featured = projects.filter(p => p.featured);
+    featuredContainer.innerHTML = featured.length ? featured.map(buildCard).join('') : `<p class="projects-empty">Nothing here yet — check back soon.</p>`;
+    observeNewCards(featuredContainer);
+}
+
+const allContainer = document.getElementById('all-projects');
+if (allContainer) {
+    allContainer.innerHTML = projects.length ? projects.map(buildCard).join('') : `<p class="projects-empty">Nothing here yet — check back soon.</p>`;
+    observeNewCards(allContainer);
+}
+
+
+
+/* ---------- PROJECT FILTER ---------- */
+const filterBtns = document.querySelectorAll('.filter-btn');
+ 
+if (filterBtns.length > 0) {
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.getAttribute('data-filter');
+ 
+            document.querySelectorAll('.project-card').forEach(card => {
+                const match = filter === 'all' || card.getAttribute('data-domain') === filter;
+                card.classList.toggle('hidden', !match);
+            });
+        });
+    });
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Projects by monasidequest</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css" />
+    </head>
+
+    <body>
+        <nav id="navbar">
+            <a href="index.html" class="nav-logo">M</a>
+             <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#learning">Learning</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+
+        <section id="projects-header">
+            <h1 class="fade-in">Projects</h1>
+            <p class="hero-intro fade-in">
+                Everything I've built, shipped, or am currently working on.
+            </p>
+        </section>
+
+        <section id="projects-list">
+            <div class="filter-bar reveal">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="web">Web</button>
+                <button class="filter-btn" data-filter="ds">Data Science</button>
+                <button class="filter-btn" data-filter="gamedev">Game Development</button>
+                <button class="filter-btn" data-filter="other">Other</button>
+            </div>
+            
+            <div class="projects-full-grid" id="all-projects"></div>
+        </section>
+        
+        <footer>
+            <p>built by hand · monasidequest</p>
+        </footer>
+
+        <script src="projects-info.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html>

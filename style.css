@@ -18,6 +18,21 @@
     --highlight: #90c4f8;
     --text: #e8edf5;
     --muted: #7b8ba7;
+    --shadow: #6a9fd866;
+
+    --tag-web-bg: #6a9fd826;
+    --tag-ds-bg: #90c4f826;
+    --tag-gamedev-bg: #8264dc26;
+    --tag-other-bg: #64c89626;
+ 
+    --tag-gamedev: #a78bfa;
+    --tag-other: #78e3b8;
+ 
+    --border-hover: #6a9fd880;
+    --glow-soft: #6a9fd81a;
+    --glow-ring: #6a9fd81f;
+    --glow-btn: #6a9fd84d;
+ 
 
     --font: 'Inter', system-ui, sans-serif;
     --max-width: 900px;
@@ -292,7 +307,7 @@ h3 {
 .learning-card:hover {
     border-left-color: var(--highlight);
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px #6a9fd866;
+    box-shadow: 0 8px 30px var(--shadow);
 }
 
 /* Styling for card status. */
@@ -312,4 +327,155 @@ h3 {
     margin-top: 0.5rem;
     line-height: 1.65;
     text-align: justify;
+}
+
+
+
+/* ---------- PROJECTS SECTION ---------- */
+/* Styling for project cards. */
+.project-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+ 
+.project-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 8px 40px var(--glow-ring), 0 0 0 1px var(--glow-soft);
+}
+
+.project-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+}
+
+.project-tag {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 9px;
+    border-radius: 20px;
+}
+
+.tag-web {
+    background: var(--tag-web-bg);
+    color: var(--accent);
+}
+.tag-ds {
+    background: var(--tag-ds-bg);
+    color: var(--highlight);
+}
+.tag-gamedev {
+    background: var(--tag-gamedev-bg);
+    color: var(--tag-gamedev);
+}
+.tag-other {
+    background: var(--tag-other-bg);
+    color: var(--tag-other);
+}
+
+.project-status {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.project-card p {
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.65;
+    flex: 1;
+}
+
+.project-links {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.project-link {
+    font-size: 0.875rem;
+    color: var(--accent);
+    transition: color 0.2s ease;
+}
+
+.project-link:hover {
+    color: var(--highlight);
+}
+
+.projects-empty {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-style: italic;
+ }
+
+/* Project grid display styling. */
+.projects-full-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+/* Stying the filter bar and buttons. */
+.filter-bar {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.filter-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-family: var(--font);
+    padding: 0.45rem 1.1rem;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+.filter-btn.active {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    font-weight: 600;
+}
+
+/* Styling for buttons. */
+.btn {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-family: var(--font);
+    padding: 0.65rem 1.5rem;
+    border-radius: 20px;
+    transition: all 0.25s ease;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 20px var(--glow-btn);
+}
+
+.hidden {
+    display: none;
 }
