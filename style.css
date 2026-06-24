@@ -479,3 +479,34 @@ h3 {
 .hidden {
     display: none;
 }
+
+
+
+/* ---------- SKILLS SECTION ---------- */
+/* Styling the skills grid. */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2.5rem;
+}
+
+.skill-group h3 {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing:  0.14em;
+    margin-bottom: 1rem;
+}
+
+.skill-group ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.skill-group ul li {
+    font-size: 1rem;
+    color: var(--text);
+}
