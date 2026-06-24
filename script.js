@@ -158,3 +158,17 @@ if (filterBtns.length > 0) {
         });
     });
 }
+
+
+
+/* ---------- COPY EMAIL ---------- */
+function copyEmail() {
+    const email = 'medhahegde04@gmail.com';
+    navigator.clipboard.writeText(email).then(() => {
+        const confirm = document.getElementById('copy-confirm');
+        if (confirm) {
+            confirm.classList.add('show');
+            setTimeout(() => confirm.classList.remove('show'), 2000);
+        }
+    });
+}
