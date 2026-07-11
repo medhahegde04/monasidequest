@@ -28,6 +28,36 @@ window.addEventListener('scroll', () => {
 
 
 
+/* ---------- HAMBURGER MENU ---------- */
+const hamburger = document.getElementById('hamburger');
+const navLinksList = document.getElementById('nav-links');
+const navOverlay = document.getElementById('nav-overlay');
+
+if (hamburger && navLinksList) {
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        navLinksList.classList.toggle('open');
+        navOverlay.classList.toggle('open');
+    });
+
+    // Close menu when a link is clicked
+    navLinksList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            navLinksList.classList.remove('open');
+            navOverlay.classList.remove('open');
+        });
+    });
+
+    // Close menu when overlay is clicked
+    navOverlay.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        navLinksList.classList.remove('open');
+        navOverlay.classList.remove('open');
+    });
+}
+
+
 /* ---------- HERO TITLE TYPING ANIMATION ---------- */
 const heroTitle = document.getElementById('hero-title');
 
