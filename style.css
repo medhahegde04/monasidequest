@@ -42,6 +42,26 @@
 
 
 
+/* ---------- PARTICLE CANVAS ---------- */
+/* Sits behind everything, fixed to the viewport. */
+#particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Push all content above the canvas. */
+nav, section, footer, .nav-overlay {
+    position: relative;
+    z-index: 1;
+}
+
+
+
 /* ---------- BODY ---------- */
 /* Base style for all the elements in the body. */
 body {
