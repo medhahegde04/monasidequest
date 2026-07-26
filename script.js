@@ -82,6 +82,41 @@ drawParticles();
 
 
 
+/* ---------- CUSTOM CURSOR ---------- */
+const dot  = document.createElement('div');
+const ring = document.createElement('div');
+dot.id  = 'cursor-dot';
+ring.id = 'cursor-ring';
+document.body.append(dot, ring);
+
+let mouseX = 0, mouseY = 0; // actual mouse position
+let ringX  = 0, ringY  = 0; // ring's current lagging position
+
+// Dot snaps to mouse immediately
+document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top  = mouseY + 'px';
+});
+
+function animateRing() {
+    ringX += (mouseX - ringX) * 0.15;
+    ringY += (mouseY - ringY) * 0.15;
+    ring.style.left = ringX + 'px';
+    ring.style.top  = ringY + 'px';
+    requestAnimationFrame(animateRing);
+}
+animateRing();
+
+// Grow cursor when hovering links, buttons, and interactive elements
+document.querySelectorAll('a, button, .filter-btn, .btn, .learning-card, .project-card').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+
+
+
 /* ---------- NAVIGATION SCROLL EFFECTS ---------- */
 const navbar = document.getElementById('navbar');
 const sections = document.querySelectorAll('section[id]');
