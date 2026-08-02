@@ -405,6 +405,35 @@ h3 {
 
 /* ---------- PROJECTS SECTION ---------- */
 /* Styling for project cards. */
+.featured-single .project-card {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: var(--radius);
+    padding: 1.8rem 1.8rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+                transform 0.15s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.featured-single .project-card h3 {
+    font-size: 1.3rem;
+}
+
+.featured-single .project-card:hover {
+    background-color: var(--surface);
+    border-color: var(--border);
+    border-left-color: var(--highlight);
+    box-shadow: 0 12px 45px var(--glow-ring), 0 0 0 1px var(--glow-soft);
+}
+
+.projects-eyebrow {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+}
+
 .project-card {
     background-color: var(--surface);
     border: 1px solid var(--border);
