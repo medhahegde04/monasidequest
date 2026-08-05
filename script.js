@@ -351,3 +351,27 @@ function copyEmail() {
         }
     });
 }
+
+
+
+/* ---------- DYNAMIC CREATIVE GALLERY ---------- */
+function buildCreativeCard(item) {
+    return `
+        <div class="creative-card reveal">
+            <img src="${item.image}" alt="${item.title}" loading="lazy">
+            <div class="creative-card-body">
+                <span class="project-tag tag-other">${item.tag}</span>
+                <h3>${item.title}</h3>
+                <p>${item.caption}</p>
+            </div>
+        </div>
+    `;
+}
+
+const creativeContainer = document.getElementById('creative-gallery');
+if (creativeContainer && typeof creativeItems !== 'undefined') {
+    creativeContainer.innerHTML = creativeItems.length
+        ? creativeItems.map(buildCreativeCard).join('')
+        : `<p class="projects-empty">Nothing here yet — check back soon.</p>`;
+    observeNewCards(creativeContainer);
+}
