@@ -1,5 +1,17 @@
 const projects = [
     {
+        title: "The Resting Cup",
+        domain: "gamedev",
+        tag: "Game Dev",
+        tagClass: "tag-gamedev",
+        status: "Published",
+        description: "A 3D cafe order game built solo on Unity in 3-4 days for a game jam, with click-based order interactions, a data-driven customer system, and a countdown patience mechanic. Published and playable on itch.io.",
+        github: "https://github.com/medhahegde04/coffee-jam-2026",
+        live: "https://monasidequest.itch.io/the-resting-cup",
+        featured: true
+    },
+
+    {
         title: "Portfolio Website",
         domain: "web",
         tag: "Web",
