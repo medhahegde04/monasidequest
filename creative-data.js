@@ -1,8 +1,1 @@
-const creativeItems = [
-    {
-        title: "",
-        tag: "",
-        image: "",
-        caption: ""
-    },
-];
+const creativeItems = [];
