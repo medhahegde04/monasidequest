@@ -2,7 +2,8 @@ const $ = id => document.getElementById(id);
 let passphrase = '';
 let imageB64 = '';
 let imageURL = '';
-const views = ['login', 'compose'];
+let pending = null;
+const views = ['login', 'compose', 'preview'];
 
 function show(name) {
     views.forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
@@ -102,15 +103,30 @@ $('file').addEventListener('change', async () => {
 
 $('btn-preview').addEventListener('click', () => {
     const title = $('title').value.trim();
+    const tag = $('tag').value.trim() || (imageB64 ? 'sketch' : 'note');
     const caption = $('caption').value.trim();
 
-    if (!title) {
-        return say('msg-compose', 'Give it a title!');
-    }
+    if (!title) return say('msg-compose', 'Give it a title!');
+    if (!imageB64 && !caption) return say('msg-compose', 'Add a picture or write a note!');
 
-    if (!imageB64 && !caption) {
-        return say('msg-compose', 'Add a picture or write a note!');
-    }
-    
-    say('msg-compose', 'Looks Good.');
+    const date = new Date().toLocaleDateString('en-CA');
+    pending = { title, tag, caption, date };
+
+    $('preview-card').innerHTML = buildCreativeCard({ ...pending, image: imageURL });
+    observeNewCards($('preview-card'));
+
+    $('files-list').innerHTML =
+        (imageB64 ? '+ a new image in creative/<br>' : '') +
+        '~ creative-data.js (1 new entry)';
+    $('commit').value = 'Add: ' + tag + ' – ' + title;
+    say('msg-preview', '');
+    show('preview');
+});
+
+
+$('btn-back').addEventListener('click', () => show('compose'));
+
+
+$('btn-publish').addEventListener('click', () => {
+    say('msg-preview', 'Publishing...');
 });

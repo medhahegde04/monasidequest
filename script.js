@@ -355,14 +355,25 @@ function copyEmail() {
 
 
 /* ---------- DYNAMIC CREATIVE GALLERY ---------- */
+function escapeHTML(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+}
+
 function buildCreativeCard(item) {
+    const image = item.image
+        ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy">`
+        : '';
+    const date = item.date ? `<span class="creative-date">${escapeHTML(item.date)}</span>` : '';
     return `
-        <div class="creative-card reveal">
-            <img src="${item.image}" alt="${item.title}" loading="lazy">
+        <div class="creative-card reveal${item.image ? '' : ' creative-note'}">
+            ${image}
             <div class="creative-card-body">
-                <span class="project-tag tag-other">${item.tag}</span>
-                <h3>${item.title}</h3>
-                <p>${item.caption}</p>
+                <span class="project-tag tag-other">${escapeHTML(item.tag)}</span>
+                <h3>${escapeHTML(item.title)}</h3>
+                <p>${escapeHTML(item.caption)}</p>
+                ${date}
             </div>
         </div>
     `;

@@ -892,3 +892,14 @@ button.btn {
 #studio .learning-card:hover {
     transform: none;
 }
+
+.creative-card.creative-note {
+    border-left: 3px solid var(--accent); 
+}
+
+.creative-date {
+    display: block;
+    margin-top: .75rem;
+    font-size: .75rem;
+    color: var(--muted); 
+}
