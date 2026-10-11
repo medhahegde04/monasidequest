@@ -136,7 +136,7 @@ $('btn-publish').addEventListener('click', async () => {
             imageBase64: imageB64,
             commitMessage: $('commit').value
         });
-        say('msg-preview', 'Server accepted "' + out.entry.title + '". Nothing committed yet.');
+                say('msg-preview', 'GitHub reachable · ' + out.github.existingEntries + ' entries so far. Nothing committed yet.');
     } catch (err) {
         say('msg-preview', 'ERROR: ' + err.message);
     }
