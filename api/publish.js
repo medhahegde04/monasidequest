@@ -3,7 +3,7 @@ const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 const REPO = process.env.GITHUB_REPO || 'medhahegde04/monasidequest';
 const BRANCH = process.env.GITHUB_BRANCH || 'main';
 const DATA_PATH = 'creative-data.js';
-const IMG_DIR = 'creative';
+const IMG_DIR = 'images/creative';
 
 
 function clean(s, max) {

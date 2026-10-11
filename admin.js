@@ -117,7 +117,7 @@ $('btn-preview').addEventListener('click', () => {
     observeNewCards($('preview-card'));
 
     $('files-list').innerHTML =
-        (imageB64 ? '+ a new image in creative/<br>' : '') +
+        (imageB64 ? '+ a new image in images/creative/<br>' : '') +
         '~ creative-data.js (1 new entry)';
     $('commit').value = 'Add: ' + tag + ' – ' + title;
     say('msg-preview', '');
