@@ -3,7 +3,7 @@ let passphrase = '';
 let imageB64 = '';
 let imageURL = '';
 let pending = null;
-const views = ['login', 'compose', 'preview'];
+const views = ['login', 'compose', 'preview', 'done'];
 
 function show(name) {
     views.forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
@@ -136,9 +136,24 @@ $('btn-publish').addEventListener('click', async () => {
             imageBase64: imageB64,
             commitMessage: $('commit').value
         });
-                say('msg-preview', 'GitHub reachable · ' + out.github.existingEntries + ' entries so far. Nothing committed yet.');
+        $('commit-link').href = out.commitUrl;
+        show('done');
     } catch (err) {
         say('msg-preview', 'ERROR: ' + err.message);
     }
     $('btn-publish').disabled = false;
+});
+
+
+$('btn-again').addEventListener('click', () => {
+    $('title').value = '';
+    $('tag').value = '';
+    $('caption').value = '';
+    $('file').value = '';
+    imageB64 = '';
+    imageURL = '';
+    pending = null;
+    say('pick-status', '');
+    say('msg-compose', '');
+    show('compose');
 });

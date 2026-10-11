@@ -3,6 +3,7 @@ const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 const REPO = process.env.GITHUB_REPO || 'medhahegde04/monasidequest';
 const BRANCH = process.env.GITHUB_BRANCH || 'main';
 const DATA_PATH = 'creative-data.js';
+const IMG_DIR = 'creative';
 
 
 function clean(s, max) {
@@ -72,6 +73,27 @@ function parseItems(src) {
 }
 
 
+async function exists(path) {
+  try {
+    await gh(`/contents/${path}?ref=${BRANCH}`);
+    return true;
+  } 
+  catch {
+    return false;
+  }
+}
+
+
+function serialize(items) {
+  return `const creativeItems = ${JSON.stringify(items, null, 4)};\n`;
+}
+
+
+function slugify(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'untitled';
+}
+
+
 module.exports = async (req, res) => {
   const body = await checkAuth(req, res);
   if (!body) return;
@@ -87,24 +109,15 @@ module.exports = async (req, res) => {
   if (!title) {
     return res.status(400).json({ error: 'A title is required.' });
   }
-
-  let imageKind = null;
-  let imageBytes = 0;
+  
+  let imgBuf = null;
+  let ext = null;
   
   if (body.imageBase64) {
-    const buf = Buffer.from(String(body.imageBase64), 'base64');
-
-    if (buf.length > MAX_IMAGE_BYTES) {
-        return res.status(413).json({ error: 'Image too large (max 3 MB).' });
-    }
-
-    imageKind = sniffImage(buf);
-
-    if (!imageKind) {
-        return res.status(400).json({ error: 'Unsupported image type (use JPG, PNG or WebP).' });
-    }
-
-    imageBytes = buf.length;
+    imgBuf = Buffer.from(String(body.imageBase64), 'base64');
+    if (imgBuf.length > MAX_IMAGE_BYTES) return res.status(413).json({ error: 'Image too large (max 3 MB).' });
+    ext = sniffImage(imgBuf);
+    if (!ext) return res.status(400).json({ error: 'Unsupported image type (use JPG, PNG or WebP).' });
   } 
   else if (!caption) {
     return res.status(400).json({ error: 'Add an image or write a note/caption.' });
@@ -114,19 +127,54 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Server not configured (missing GITHUB_TOKEN).' });
   }
 
-  try {
+    try {
     const ref = await gh(`/git/ref/heads/${BRANCH}`);
+    const headSha = ref.object.sha;
+    const headCommit = await gh(`/git/commits/${headSha}`);
+
     const file = await gh(`/contents/${DATA_PATH}?ref=${BRANCH}`);
     const items = parseItems(Buffer.from(file.content, 'base64').toString('utf8'));
 
+    let imagePath = '';
+    if (imgBuf) {
+      imagePath = `${IMG_DIR}/${date}-${slugify(title)}.${ext}`;
+      if (await exists(imagePath)) {
+        imagePath = `${IMG_DIR}/${date}-${slugify(title)}-${Date.now().toString(36)}.${ext}`;
+      }
+    }
+
+    items.unshift({ title, tag, image: imagePath, caption, date });
+
+    const treeEntries = [];
+    if (imgBuf) {
+      const imgBlob = await gh('/git/blobs', {
+        method: 'POST',
+        body: JSON.stringify({ content: imgBuf.toString('base64'), encoding: 'base64' }),
+      });
+      treeEntries.push({ path: imagePath, mode: '100644', type: 'blob', sha: imgBlob.sha });
+    }
+    const dataBlob = await gh('/git/blobs', {
+      method: 'POST',
+      body: JSON.stringify({ content: serialize(items), encoding: 'utf-8' }),
+    });
+    treeEntries.push({ path: DATA_PATH, mode: '100644', type: 'blob', sha: dataBlob.sha });
+
+    const tree = await gh('/git/trees', {
+      method: 'POST',
+      body: JSON.stringify({ base_tree: headCommit.tree.sha, tree: treeEntries }),
+    });
+    const commit = await gh('/git/commits', {
+      method: 'POST',
+      body: JSON.stringify({ message: commitMessage, tree: tree.sha, parents: [headSha] }),
+    });
+    await gh(`/git/refs/heads/${BRANCH}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ sha: commit.sha }),
+    });
+
     return res.status(200).json({
       ok: true,
-      dryRun: true,
-      github: { branchHead: ref.object.sha.slice(0, 7), existingEntries: items.length },
-      entry: { title, tag, caption, date },
-      imageKind,
-      imageBytes,
-      commitMessage,
+      commitUrl: `https://github.com/${REPO}/commit/${commit.sha}`,
     });
   } 
   catch (err) {
