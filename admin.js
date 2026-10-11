@@ -7,6 +7,7 @@ const views = ['login', 'compose', 'preview', 'done'];
 
 function show(name) {
     views.forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
+    window.scrollTo(0, 0);
 }
 
 function say(id, text) {
@@ -36,7 +37,7 @@ $('btn-login').addEventListener('click', async () => {
     say('msg-login', 'checking...');
     
     try {
-        await api({ action: 'ping' });
+        await api('/api/validate');
         say('msg-login', '');
         show('compose');
     } 
