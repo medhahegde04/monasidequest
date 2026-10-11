@@ -1,10 +1,15 @@
 const $ = id => document.getElementById(id);
-
 let passphrase = '';
+const views = ['login', 'compose'];
+
+function show(name) {
+    views.forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
+}
 
 function say(id, text) {
     $(id).textContent = text;
 }
+
 
 async function api(payload) {
     const res = await fetch('/api/validate', {
@@ -22,16 +27,41 @@ async function api(payload) {
     return data;
 }
 
+
 $('btn-login').addEventListener('click', async () => {
     passphrase = $('pass').value;
     say('msg-login', 'checking...');
     
     try {
         await api({ action: 'ping' });
-        say('msg-login', 'unlocked ✓');
+        say('msg-login', '');
+        show('compose');
     } 
     catch (err) {
         passphrase = '';
         say('msg-login', 'ERROR: ' + err.message);
     }
+});
+
+
+$('btn-lock').addEventListener('click', () => {
+    passphrase = '';
+    $('pass').value = '';
+    show('login');
+});
+
+
+$('btn-preview').addEventListener('click', () => {
+    const title = $('title').value.trim();
+    const caption = $('caption').value.trim();
+
+    if (!title) {
+        return say('msg-compose', 'Give it a title!');
+    }
+
+    if (!caption) {
+        return say('msg-compose', 'Write a note.');
+    }
+
+    say('msg-compose', 'Looks Good.');
 });

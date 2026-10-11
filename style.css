@@ -862,7 +862,7 @@ footer {
 
 
 /* ---------- STUDIO (admin page) ---------- */
-input[type="password"] {
+input[type="password"], input[type="text"], textarea {
     width: 100%;
     background-color: var(--bg);
     color: var(--text);
@@ -874,10 +874,15 @@ input[type="password"] {
     margin-bottom: 1.1rem;
 }
 
-input:focus {
+input:focus, textarea:focus {
     outline: none;
     border-color: var(--highlight);
     box-shadow: 0 0 0 3px var(--glow-ring);
+}
+
+textarea {
+    min-height:110px;
+    resize: vertical
 }
 
 button.btn {
