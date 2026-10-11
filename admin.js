@@ -14,8 +14,8 @@ function say(id, text) {
 }
 
 
-async function api(payload) {
-    const res = await fetch('/api/validate', {
+async function api(url, payload = {}) {
+    const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ passphrase, ...payload })
@@ -127,6 +127,18 @@ $('btn-preview').addEventListener('click', () => {
 $('btn-back').addEventListener('click', () => show('compose'));
 
 
-$('btn-publish').addEventListener('click', () => {
-    say('msg-preview', 'Publishing...');
+$('btn-publish').addEventListener('click', async () => {
+    $('btn-publish').disabled = true;
+    say('msg-preview', 'sending...');
+    try {
+        const out = await api('/api/publish', {
+            ...pending,
+            imageBase64: imageB64,
+            commitMessage: $('commit').value
+        });
+        say('msg-preview', 'Server accepted "' + out.entry.title + '". Nothing committed yet.');
+    } catch (err) {
+        say('msg-preview', 'ERROR: ' + err.message);
+    }
+    $('btn-publish').disabled = false;
 });
