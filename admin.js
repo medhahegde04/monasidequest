@@ -1,5 +1,7 @@
 const $ = id => document.getElementById(id);
 let passphrase = '';
+let imageB64 = '';
+let imageURL = '';
 const views = ['login', 'compose'];
 
 function show(name) {
@@ -51,6 +53,53 @@ $('btn-lock').addEventListener('click', () => {
 });
 
 
+function blobToBase64(blob) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.readAsDataURL(blob);
+    });
+}
+
+
+$('btn-pick').addEventListener('click', () => $('file').click());
+
+
+$('file').addEventListener('change', async () => {
+    const file = $('file').files[0];
+
+    if (!file) {
+        return;
+    }
+
+    say('pick-status', 'processing...');
+
+    try {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        await img.decode();
+
+        const scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.naturalWidth * scale);
+        canvas.height = Math.round(img.naturalHeight * scale);
+
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+        imageURL = URL.createObjectURL(blob);
+        imageB64 = await blobToBase64(blob);
+        say('pick-status', 'ready · ' + Math.round(blob.size / 1024) + ' KB');
+    } 
+    catch (err) {
+        say('pick-status', 'ERROR: Could not read that image.');
+    }
+});
+
+
 $('btn-preview').addEventListener('click', () => {
     const title = $('title').value.trim();
     const caption = $('caption').value.trim();
@@ -59,9 +108,9 @@ $('btn-preview').addEventListener('click', () => {
         return say('msg-compose', 'Give it a title!');
     }
 
-    if (!caption) {
-        return say('msg-compose', 'Write a note.');
+    if (!imageB64 && !caption) {
+        return say('msg-compose', 'Add a picture or write a note!');
     }
-
+    
     say('msg-compose', 'Looks Good.');
 });
