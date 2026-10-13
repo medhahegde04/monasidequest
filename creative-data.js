@@ -1,5 +1,12 @@
 const creativeItems = [
     {
+        "title": "Day 1: Monokuma",
+        "tag": "character sketch",
+        "image": "images/creative/2026-10-13-day-1-monokuma.jpg",
+        "caption": "I got new acrylic brush pens and wanted a quick way to test them, and Monokuma was the first character I thought of. Simple design, unique personality, just right for trying out a new medium. The pink splat behind his name is a small nod to how the game censors blood.",
+        "date": "2026-10-13"
+    },
+    {
         "title": "Day 1: Starry Night",
         "tag": "sketch",
         "image": "images/creative/2026-10-13-day-1-starry-night.jpg",
