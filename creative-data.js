@@ -1,5 +1,12 @@
 const creativeItems = [
     {
+        "title": "Day 2: Makoto Hayakawa",
+        "tag": "character sketch",
+        "image": "images/creative/2026-10-13-day-2-makoto-hayakawa.jpg",
+        "caption": "Makoto from Inkonbini, because she was the first character that came to mind today, and I finished the game only two or three months ago, so she's still fresh in my head. Funny coincidence: she shares a sketchbook page with Monokuma, and the protagonist of the first Danganronpa game is also a Makoto (Makoto Naegi). Still a Makoto on that page, just a different one. I might have messed this sketch up a bit, but it's been a long time since I last drew anything like this, especially with a new medium, so I'm trying not to stress over it. Consistency is still the goal.",
+        "date": "2026-10-13"
+    },
+    {
         "title": "Day 1: Monokuma",
         "tag": "character sketch",
         "image": "images/creative/2026-10-13-day-1-monokuma.jpg",
