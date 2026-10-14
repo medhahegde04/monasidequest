@@ -1,5 +1,12 @@
 const creativeItems = [
     {
+        "title": "Day 3: Some Mafia42 Girls",
+        "tag": "character sketch",
+        "image": "images/creative/2026-10-14-day-3-some-mafia42-girls.jpg",
+        "caption": "Quick character sketches from Mafia42: Spy, Psychic, Hostess, Mad Scientist, Priest and Martyr. I wanted to get something done before I lose signal at my grandparents' place. They're not perfect, but I drew them with zero pressure to be perfect so I'm posting them anyway. If it goes quiet here for a few days, that's why.",
+        "date": "2026-10-14"
+    },
+    {
         "title": "Day 2: Makoto Hayakawa",
         "tag": "character sketch",
         "image": "images/creative/2026-10-13-day-2-makoto-hayakawa.jpg",
