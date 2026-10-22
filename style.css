@@ -813,9 +813,8 @@ footer {
 
 /* ---------- CREATIVE SECTION ---------- */
 .creative-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.25rem;
+    columns: 240px;
+    column-gap: 1.25rem;
     margin-top: 1.5rem;
 }
 
@@ -825,6 +824,8 @@ footer {
     border-radius: var(--radius);
     overflow: hidden;
     transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    break-inside: avoid;
+    margin-bottom: 1.25rem;
 }
 
 .creative-card:hover {
