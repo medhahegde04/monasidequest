@@ -385,4 +385,32 @@ if (creativeContainer && typeof creativeItems !== 'undefined') {
         ? creativeItems.map(buildCreativeCard).join('')
         : `<p class="projects-empty">Nothing here yet — check back soon.</p>`;
     observeNewCards(creativeContainer);
+
+    const creativeCards = Array.from(creativeContainer.querySelectorAll('.creative-card'));
+
+    if (creativeCards.length) {
+        let lastCols = 0;
+
+        const layoutCreative = () => {
+            const gap = 20;
+            const minWidth = 240;
+            const cols = Math.max(1, Math.floor((creativeContainer.clientWidth + gap) / (minWidth + gap)));
+            if (cols === lastCols) return;
+            lastCols = cols;
+
+            creativeContainer.innerHTML = '';
+            const columns = [];
+            for (let i = 0; i < cols; i++) {
+                const col = document.createElement('div');
+                col.className = 'creative-col';
+                creativeContainer.appendChild(col);
+                columns.push(col);
+            }
+            creativeCards.forEach((card, i) => columns[i % cols].appendChild(card));
+        };
+
+        creativeContainer.classList.add('is-masonry');
+        layoutCreative();
+        window.addEventListener('resize', layoutCreative);
+    }
 }
