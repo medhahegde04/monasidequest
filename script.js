@@ -365,12 +365,22 @@ function buildCreativeCard(item) {
     const image = item.image
         ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy">`
         : '';
+        
     const date = item.date ? `<span class="creative-date">${escapeHTML(item.date)}</span>` : '';
+
+    const tags = String(item.tag || '')
+        .split(',')
+        .map(t => t.trim())
+        .filter(Boolean)
+        .slice(0, 4)
+        .map(t => `<span class="project-tag tag-other">${escapeHTML(t)}</span>`)
+        .join(' ');
+
     return `
         <div class="creative-card reveal${item.image ? '' : ' creative-note'}">
             ${image}
             <div class="creative-card-body">
-                <span class="project-tag tag-other">${escapeHTML(item.tag)}</span>
+                ${tags}
                 <h3>${escapeHTML(item.title)}</h3>
                 <p>${escapeHTML(item.caption)}</p>
                 ${date}

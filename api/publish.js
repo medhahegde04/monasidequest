@@ -99,7 +99,7 @@ module.exports = async (req, res) => {
   if (!body) return;
 
   const title = clean(body.title, 80);
-  const tag = clean(body.tag, 30) || 'note';
+  const tag = clean(body.tag, 60) || 'note';
   const caption = clean(body.caption, 600);
   const date = /^\d{4}-\d{2}-\d{2}$/.test(body.date || '')
     ? body.date
