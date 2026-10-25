@@ -144,6 +144,7 @@ module.exports = async (req, res) => {
     }
 
     items.unshift({ title, tag, image: imagePath, caption, date });
+    items.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
     const treeEntries = [];
     if (imgBuf) {

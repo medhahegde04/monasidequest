@@ -4,6 +4,9 @@ let imageB64 = '';
 let imageURL = '';
 let pending = null;
 const views = ['login', 'compose', 'preview', 'done'];
+const today = () => new Date().toLocaleDateString('en-CA');
+$('date').value = today();
+$('date').max = today();
 
 function show(name) {
     views.forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
@@ -110,7 +113,7 @@ $('btn-preview').addEventListener('click', () => {
     if (!title) return say('msg-compose', 'Give it a title!');
     if (!imageB64 && !caption) return say('msg-compose', 'Add a picture or write a note!');
 
-    const date = new Date().toLocaleDateString('en-CA');
+    const date = $('date').value || today();
     pending = { title, tag, caption, date };
 
     $('preview-card').innerHTML = buildCreativeCard({ ...pending, image: imageURL });
@@ -149,6 +152,7 @@ $('btn-publish').addEventListener('click', async () => {
 $('btn-again').addEventListener('click', () => {
     $('title').value = '';
     $('tag').value = '';
+    $('date').value = today();
     $('caption').value = '';
     $('file').value = '';
     imageB64 = '';

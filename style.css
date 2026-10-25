@@ -874,7 +874,7 @@ footer {
 
 
 /* ---------- STUDIO (admin page) ---------- */
-input[type="password"], input[type="text"], textarea {
+input[type="password"], input[type="text"], input[type="date"], textarea {
     width: 100%;
     background-color: var(--bg);
     color: var(--text);
@@ -884,6 +884,10 @@ input[type="password"], input[type="text"], textarea {
     border-radius: var(--radius);
     padding: 0.65rem 0.85rem;
     margin-bottom: 1.1rem;
+}
+
+input[type="date"] {
+    color-scheme: dark;
 }
 
 input:focus, textarea:focus {
