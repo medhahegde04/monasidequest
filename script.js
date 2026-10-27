@@ -422,5 +422,46 @@ if (creativeContainer && typeof creativeItems !== 'undefined') {
         creativeContainer.classList.add('is-masonry');
         layoutCreative();
         window.addEventListener('resize', layoutCreative);
+
+        const lightbox = document.createElement('div');
+        lightbox.id = 'lightbox';
+        lightbox.innerHTML = '<img alt=""><p></p>';
+        document.body.appendChild(lightbox);
+
+        const lightboxImg = lightbox.querySelector('img');
+        const lightboxCaption = lightbox.querySelector('p');
+
+        const openLightbox = (src, title) => {
+            lightboxImg.src = src;
+            lightboxImg.alt = title;
+            lightboxCaption.textContent = title;
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.body.classList.remove('cursor-hover');
+        };
+
+        const closeLightbox = () => {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        };
+
+        creativeContainer.addEventListener('click', e => {
+            const img = e.target.closest('.creative-card img');
+            if (img) openLightbox(img.src, img.alt);
+        });
+
+        creativeContainer.addEventListener('mouseover', e => {
+            if (e.target.closest('.creative-card img')) document.body.classList.add('cursor-hover');
+        });
+
+        creativeContainer.addEventListener('mouseout', e => {
+            if (e.target.closest('.creative-card img')) document.body.classList.remove('cursor-hover');
+        });
+
+        lightbox.addEventListener('click', closeLightbox);
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeLightbox();
+        });
     }
 }
