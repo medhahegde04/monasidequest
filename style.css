@@ -920,6 +920,45 @@ button.btn {
     color: var(--muted); 
 }
 
+.creative-media {
+    position: relative;
+}
+
+.creative-count {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    background-color: #0a0d14cc;
+    color: var(--text);
+    font-size: 0.72rem;
+    padding: 2px 9px;
+    border-radius: 20px;
+}
+
+.lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 2.6rem;
+    line-height: 1;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s ease;
+}
+
+.lb-nav:hover {
+    color: var(--highlight);
+}
+
+.lb-prev {
+    left: 0.5rem;
+}
+
+.lb-next {
+    right: 0.5rem;
+}
 
 
 /* ---------- LIGHTBOX ---------- */

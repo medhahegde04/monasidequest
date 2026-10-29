@@ -362,10 +362,15 @@ function escapeHTML(str) {
 }
 
 function buildCreativeCard(item) {
-    const image = item.image
-        ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy">`
+    const images = item.images || (item.image ? [item.image] : []);
+
+    const media = images.length
+        ? `<div class="creative-media">
+                <img src="${escapeHTML(images[0])}" alt="${escapeHTML(item.title)}" loading="lazy">
+                ${images.length > 1 ? `<span class="creative-count">1/${images.length}</span>` : ''}
+            </div>`
         : '';
-        
+
     const date = item.date ? `<span class="creative-date">${escapeHTML(item.date)}</span>` : '';
 
     const tags = String(item.tag || '')
@@ -377,8 +382,8 @@ function buildCreativeCard(item) {
         .join(' ');
 
     return `
-        <div class="creative-card reveal${item.image ? '' : ' creative-note'}">
-            ${image}
+        <div class="creative-card reveal${images.length ? '' : ' creative-note'}" data-images="${escapeHTML(JSON.stringify(images))}">
+            ${media}
             <div class="creative-card-body">
                 ${tags}
                 <h3>${escapeHTML(item.title)}</h3>
@@ -399,42 +404,40 @@ if (creativeContainer && typeof creativeItems !== 'undefined') {
     const creativeCards = Array.from(creativeContainer.querySelectorAll('.creative-card'));
 
     if (creativeCards.length) {
-        let lastCols = 0;
-
-        const layoutCreative = () => {
-            const gap = 20;
-            const minWidth = 240;
-            const cols = Math.max(1, Math.floor((creativeContainer.clientWidth + gap) / (minWidth + gap)));
-            if (cols === lastCols) return;
-            lastCols = cols;
-
-            creativeContainer.innerHTML = '';
-            const columns = [];
-            for (let i = 0; i < cols; i++) {
-                const col = document.createElement('div');
-                col.className = 'creative-col';
-                creativeContainer.appendChild(col);
-                columns.push(col);
-            }
-            creativeCards.forEach((card, i) => columns[i % cols].appendChild(card));
-        };
-
-        creativeContainer.classList.add('is-masonry');
-        layoutCreative();
-        window.addEventListener('resize', layoutCreative);
-
-        const lightbox = document.createElement('div');
+                const lightbox = document.createElement('div');
         lightbox.id = 'lightbox';
-        lightbox.innerHTML = '<img alt=""><p></p>';
+        lightbox.innerHTML = '<button class="lb-nav lb-prev" aria-label="Previous picture">‹</button><img alt=""><p></p><button class="lb-nav lb-next" aria-label="Next picture">›</button>';
         document.body.appendChild(lightbox);
 
         const lightboxImg = lightbox.querySelector('img');
         const lightboxCaption = lightbox.querySelector('p');
+        const prevBtn = lightbox.querySelector('.lb-prev');
+        const nextBtn = lightbox.querySelector('.lb-next');
 
-        const openLightbox = (src, title) => {
-            lightboxImg.src = src;
-            lightboxImg.alt = title;
-            lightboxCaption.textContent = title;
+        let lbImages = [];
+        let lbIndex = 0;
+        let lbTitle = '';
+
+        const showCurrent = () => {
+            lightboxImg.src = lbImages[lbIndex];
+            lightboxImg.alt = lbTitle;
+            lightboxCaption.textContent = lbImages.length > 1
+                ? lbTitle + ' · ' + (lbIndex + 1) + '/' + lbImages.length
+                : lbTitle;
+            prevBtn.style.display = nextBtn.style.display = lbImages.length < 2 ? 'none' : '';
+        };
+
+        const step = dir => {
+            if (lbImages.length < 2) return;
+            lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+            showCurrent();
+        };
+
+        const openLightbox = (images, title) => {
+            lbImages = images;
+            lbIndex = 0;
+            lbTitle = title;
+            showCurrent();
             lightbox.classList.add('open');
             document.body.style.overflow = 'hidden';
             document.body.classList.remove('cursor-hover');
@@ -447,7 +450,11 @@ if (creativeContainer && typeof creativeItems !== 'undefined') {
 
         creativeContainer.addEventListener('click', e => {
             const img = e.target.closest('.creative-card img');
-            if (img) openLightbox(img.src, img.alt);
+            if (!img) return;
+            const card = img.closest('.creative-card');
+            let images = [];
+            try { images = JSON.parse(card.dataset.images || '[]'); } catch {}
+            if (images.length) openLightbox(images, img.alt);
         });
 
         creativeContainer.addEventListener('mouseover', e => {
@@ -458,10 +465,22 @@ if (creativeContainer && typeof creativeItems !== 'undefined') {
             if (e.target.closest('.creative-card img')) document.body.classList.remove('cursor-hover');
         });
 
+        prevBtn.addEventListener('click', e => { e.stopPropagation(); step(-1); });
+        nextBtn.addEventListener('click', e => { e.stopPropagation(); step(1); });
         lightbox.addEventListener('click', closeLightbox);
 
         document.addEventListener('keydown', e => {
+            if (!lightbox.classList.contains('open')) return;
             if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') step(-1);
+            if (e.key === 'ArrowRight') step(1);
+        });
+
+        let touchX = 0;
+        lightbox.addEventListener('touchstart', e => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+        lightbox.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - touchX;
+            if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
         });
     }
 }
