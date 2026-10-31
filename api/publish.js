@@ -1,5 +1,6 @@
 const { checkAuth } = require('./_authenticate');
-const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
+const MAX_IMAGES = 4;
+const MAX_TOTAL_BYTES = 3 * 1024 * 1024;
 const REPO = process.env.GITHUB_REPO || 'medhahegde04/monasidequest';
 const BRANCH = process.env.GITHUB_BRANCH || 'main';
 const DATA_PATH = 'creative-data.js';
@@ -69,7 +70,7 @@ function parseItems(src) {
     arr = new Function(`return ${literal}`)();
   }
 
-  return arr.filter((it) => it && (it.title || it.caption || it.image));
+    return arr.filter((it) => it && (it.title || it.caption || it.image || (it.images && it.images.length)));
 }
 
 
@@ -110,16 +111,32 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'A title is required.' });
   }
   
-  let imgBuf = null;
-  let ext = null;
-  
-  if (body.imageBase64) {
-    imgBuf = Buffer.from(String(body.imageBase64), 'base64');
-    if (imgBuf.length > MAX_IMAGE_BYTES) return res.status(413).json({ error: 'Image too large (max 3 MB).' });
-    ext = sniffImage(imgBuf);
-    if (!ext) return res.status(400).json({ error: 'Unsupported image type (use JPG, PNG or WebP).' });
-  } 
-  else if (!caption) {
+    const rawImages = Array.isArray(body.images)
+    ? body.images
+    : (body.imageBase64 ? [body.imageBase64] : []);
+
+  if (rawImages.length > MAX_IMAGES) {
+    return res.status(400).json({ error: `Too many pictures (max ${MAX_IMAGES}).` });
+  }
+
+  const imgs = [];
+  let totalBytes = 0;
+
+  for (const raw of rawImages) {
+    const buf = Buffer.from(String(raw), 'base64');
+    const ext = sniffImage(buf);
+    if (!ext) {
+      return res.status(400).json({ error: 'Unsupported image type (use JPG, PNG or WebP).' });
+    }
+    totalBytes += buf.length;
+    imgs.push({ buf, ext });
+  }
+
+  if (totalBytes > MAX_TOTAL_BYTES) {
+    return res.status(413).json({ error: 'Pictures are too large in total (max 3 MB).' });
+  }
+
+  if (!imgs.length && !caption) {
     return res.status(400).json({ error: 'Add an image or write a note/caption.' });
   }
 
@@ -135,31 +152,34 @@ module.exports = async (req, res) => {
     const file = await gh(`/contents/${DATA_PATH}?ref=${BRANCH}`);
     const items = parseItems(Buffer.from(file.content, 'base64').toString('utf8'));
 
-    let imagePath = '';
-    if (imgBuf) {
-      imagePath = `${IMG_DIR}/${date}-${slugify(title)}.${ext}`;
-      if (await exists(imagePath)) {
-        imagePath = `${IMG_DIR}/${date}-${slugify(title)}-${Date.now().toString(36)}.${ext}`;
-      }
-    }
+        const nameFor = (stem, i) => imgs.length === 1
+      ? `${stem}.${imgs[0].ext}`
+      : `${stem}-${i + 1}.${imgs[i].ext}`;
 
-    items.unshift({ title, tag, image: imagePath, caption, date });
+    let stem = `${IMG_DIR}/${date}-${slugify(title)}`;
+    if (imgs.length && await exists(nameFor(stem, 0))) {
+      stem = `${stem}-${Date.now().toString(36)}`;
+    }
+    const imagePaths = imgs.map((_, i) => nameFor(stem, i));
+
+    items.unshift({ title, tag, images: imagePaths, caption, date });
     items.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
-    const treeEntries = [];
-    if (imgBuf) {
-      const imgBlob = await gh('/git/blobs', {
-        method: 'POST',
-        body: JSON.stringify({ content: imgBuf.toString('base64'), encoding: 'base64' }),
-      });
-      treeEntries.push({ path: imagePath, mode: '100644', type: 'blob', sha: imgBlob.sha });
-    }
+    const imageBlobs = await Promise.all(imgs.map(img => gh('/git/blobs', {
+      method: 'POST',
+      body: JSON.stringify({ content: img.buf.toString('base64'), encoding: 'base64' }),
+    })));
+
+    const treeEntries = imageBlobs.map((blob, i) => ({
+      path: imagePaths[i], mode: '100644', type: 'blob', sha: blob.sha,
+    }));
+
     const dataBlob = await gh('/git/blobs', {
       method: 'POST',
       body: JSON.stringify({ content: serialize(items), encoding: 'utf-8' }),
     });
     treeEntries.push({ path: DATA_PATH, mode: '100644', type: 'blob', sha: dataBlob.sha });
-
+    
     const tree = await gh('/git/trees', {
       method: 'POST',
       body: JSON.stringify({ base_tree: headCommit.tree.sha, tree: treeEntries }),
