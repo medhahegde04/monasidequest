@@ -1,7 +1,9 @@
 const $ = id => document.getElementById(id);
+const MAX_PICTURES = 4;
+const MAX_TOTAL = 3 * 1024 * 1024;
+
 let passphrase = '';
-let imageB64 = '';
-let imageURL = '';
+let pictures = [];
 let pending = null;
 const views = ['login', 'compose', 'preview', 'done'];
 const today = () => new Date().toLocaleDateString('en-CA');
@@ -67,60 +69,135 @@ function blobToBase64(blob) {
 }
 
 
+async function processFile(file) {
+    const src = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = src;
+    await img.decode();
+
+    const scale = Math.min(1, 1400 / Math.max(img.naturalWidth, img.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(img.naturalWidth * scale);
+    canvas.height = Math.round(img.naturalHeight * scale);
+
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(src);
+
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.82));
+    return {
+        url: URL.createObjectURL(blob),
+        b64: await blobToBase64(blob),
+        size: blob.size
+    };
+}
+
+
+function totalSize() {
+    return pictures.reduce((sum, p) => sum + p.size, 0);
+}
+
+
+function updateStatus(skipped = 0) {
+    if (!pictures.length) {
+        say('pick-status', skipped ? 'ERROR: ' + skipped + ' skipped (max ' + MAX_PICTURES + ' pictures, 3 MB total)' : '');
+        return;
+    }
+    let text = pictures.length + (pictures.length === 1 ? ' picture' : ' pictures') + ' · ' + Math.round(totalSize() / 1024) + ' KB';
+    if (skipped) {
+        text += ' · ' + skipped + ' skipped (max ' + MAX_PICTURES + ' pictures, 3 MB total)';
+    }
+    say('pick-status', text);
+}
+
+
+function renderThumbs() {
+    $('thumbs').innerHTML = '';
+
+    pictures.forEach((pic, i) => {
+        const box = document.createElement('div');
+        box.className = 'thumb';
+
+        const img = document.createElement('img');
+        img.src = pic.url;
+        img.alt = 'Picture ' + (i + 1);
+
+        const btn = document.createElement('button');
+        btn.textContent = '×';
+        btn.setAttribute('aria-label', 'Remove picture ' + (i + 1));
+        btn.addEventListener('click', () => removePicture(i));
+
+        box.append(img, btn);
+        $('thumbs').appendChild(box);
+    });
+}
+
+
+function removePicture(i) {
+    URL.revokeObjectURL(pictures[i].url);
+    pictures.splice(i, 1);
+    renderThumbs();
+    updateStatus();
+}
+
+
 $('btn-pick').addEventListener('click', () => $('file').click());
 
 
 $('file').addEventListener('change', async () => {
-    const file = $('file').files[0];
+    const files = Array.from($('file').files);
+    $('file').value = '';
 
-    if (!file) {
+    if (!files.length) {
         return;
     }
 
     say('pick-status', 'processing...');
+    let skipped = 0;
 
-    try {
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        await img.decode();
+    for (const file of files) {
+        if (pictures.length >= MAX_PICTURES) {
+            skipped++;
+            continue;
+        }
 
-        const scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.round(img.naturalWidth * scale);
-        canvas.height = Math.round(img.naturalHeight * scale);
-
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
-        imageURL = URL.createObjectURL(blob);
-        imageB64 = await blobToBase64(blob);
-        say('pick-status', 'ready · ' + Math.round(blob.size / 1024) + ' KB');
-    } 
-    catch (err) {
-        say('pick-status', 'ERROR: Could not read that image.');
+        try {
+            const pic = await processFile(file);
+            if (totalSize() + pic.size > MAX_TOTAL) {
+                URL.revokeObjectURL(pic.url);
+                skipped++;
+                continue;
+            }
+            pictures.push(pic);
+        }
+        catch (err) {
+            skipped++;
+        }
     }
+
+    renderThumbs();
+    updateStatus(skipped);
 });
 
 
 $('btn-preview').addEventListener('click', () => {
     const title = $('title').value.trim();
-    const tag = $('tag').value.trim() || (imageB64 ? 'sketch' : 'note');
+    const tag = $('tag').value.trim() || (pictures.length ? 'sketch' : 'note');
     const caption = $('caption').value.trim();
 
     if (!title) return say('msg-compose', 'Give it a title!');
-    if (!imageB64 && !caption) return say('msg-compose', 'Add a picture or write a note!');
-
+    if (!pictures.length && !caption) return say('msg-compose', 'Add a picture or write a note!');
     const date = $('date').value || today();
     pending = { title, tag, caption, date };
-
-    $('preview-card').innerHTML = buildCreativeCard({ ...pending, image: imageURL });
+    
+    $('preview-card').innerHTML = buildCreativeCard({ ...pending, images: pictures.map(p => p.url) });
     observeNewCards($('preview-card'));
 
+    const n = pictures.length;
     $('files-list').innerHTML =
-        (imageB64 ? '+ a new image in images/creative/<br>' : '') +
+        (n ? '+ ' + n + (n === 1 ? ' new image' : ' new images') + ' in images/creative/<br>' : '') +
         '~ creative-data.js (1 new entry)';
     $('commit').value = 'Add: ' + tag + ' – ' + title;
     say('msg-preview', '');
@@ -137,7 +214,7 @@ $('btn-publish').addEventListener('click', async () => {
     try {
         const out = await api('/api/publish', {
             ...pending,
-            imageBase64: imageB64,
+            images: pictures.map(p => p.b64),
             commitMessage: $('commit').value
         });
         $('commit-link').href = out.commitUrl;
@@ -154,9 +231,9 @@ $('btn-again').addEventListener('click', () => {
     $('tag').value = '';
     $('date').value = today();
     $('caption').value = '';
-    $('file').value = '';
-    imageB64 = '';
-    imageURL = '';
+    pictures.forEach(p => URL.revokeObjectURL(p.url));
+    pictures = [];
+    renderThumbs();
     pending = null;
     say('pick-status', '');
     say('msg-compose', '');
